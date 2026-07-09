@@ -1,32 +1,76 @@
-# 🔎 Search Knowledge Repository
+# ONGC Nexus
 
-A full-stack **MERN** application for fast and efficient searching, uploading, and browsing of organizational documents and media. The application provides a centralized knowledge repository with full-text search, metadata filtering, PDF text extraction, and an interactive document viewer.
+> **Enterprise Knowledge Repository & Document Management System (DMS)** built with the **MERN Stack** for secure document storage, full-text search, and role-based access control.
+
+![Dashboard Preview](docs/dashboard-preview.png)
 
 ---
 
 ## 📖 Overview
 
-The **Search Knowledge Repository** enables users to quickly discover information across unstructured documents stored within an organization. Documents are uploaded, processed, indexed, and made searchable through a modern, responsive web interface.
+ONGC Nexus is an enterprise-grade Knowledge Repository designed to centralize organizational documents in secure environments. It combines fast document search, PDF text extraction, metadata management, and role-based access control to provide a scalable solution for managing corporate knowledge.
 
-### ✨ Features
-
-- 🔍 Full-text document search
-- 📄 PDF upload with automatic text extraction
-- 🏷 Dynamic metadata storage
-- ⚡ AND / OR search modes
-- 🎯 Keyword highlighting
-- 🌙 Modern dark-themed UI
-- 📱 Responsive design
-- 🚀 MongoDB text indexing for fast searches
+The application enables users to securely upload, organize, search, and view PDF documents while ensuring only authorized users can perform administrative operations.
 
 ---
 
-# 🛠 Tech Stack
+# ✨ Features
+
+## 📄 Document Management
+
+- Upload PDF documents
+- Automatic PDF text extraction
+- Centralized document repository
+- Dynamic metadata storage
+- Full-screen document viewer
+- Keyword highlighting
+- Responsive document preview
+
+## 🔍 Search Engine
+
+- Full-text document search
+- AND / OR search modes
+- MongoDB text indexing
+- Search by filename or document content
+- Highlight matched keywords
+- Fast search performance
+
+## 🔐 Security
+
+- JWT Authentication
+- bcrypt password hashing
+- Role-Based Access Control (RBAC)
+- Protected APIs
+- Protected React routes
+- Stateless authentication
+
+## 👥 User Roles
+
+| Role | Permissions |
+|------|-------------|
+| **MasterAdmin** | Full system administration, manage users, upload documents |
+| **Uploader** | Upload and manage documents |
+| **Normal User** | Read-only access to repository |
+
+## 🎨 User Experience
+
+- Modern dark theme
+- Responsive design
+- Glassmorphism UI
+- Framer Motion animations
+- Interactive dashboard
+
+---
+
+# 🛠 Technology Stack
 
 ## Frontend
 
-- React (Vite)
+- React 19
+- Vite
 - Tailwind CSS
+- React Router DOM
+- Axios
 - Framer Motion
 - Lucide React
 
@@ -36,6 +80,8 @@ The **Search Knowledge Repository** enables users to quickly discover informatio
 - Express.js
 - Multer
 - pdf-parse
+- JWT
+- bcrypt
 
 ## Database
 
@@ -47,64 +93,110 @@ The **Search Knowledge Repository** enables users to quickly discover informatio
 # 🏗 System Architecture
 
 ```mermaid
-graph TD
-    Client["React + Vite Frontend"] -->|HTTP Requests| API["Node.js + Express API"]
-    API -->|Mongoose ORM| DB["MongoDB Database"]
+graph LR
+
+User["User Browser"]
+
+User --> Frontend["React + Vite"]
+
+Frontend -->|Axios API| Backend["Express.js API"]
+
+Backend --> Auth["JWT Middleware"]
+
+Auth --> API["Protected APIs"]
+
+API --> MongoDB[(MongoDB)]
+
+API --> Storage["File Storage"]
+
+MongoDB --> Backend
+
+Storage --> Backend
+
+Backend --> Frontend
+
+Frontend --> User
 ```
 
 ---
 
-# 📂 Database Design
+# 🔐 Authentication Flow
 
-The ONGC Nexus database utilizes two highly optimized MongoDB collections: **Users** (handling authentication and RBAC) and **Documents** (storing file details, metadata, and extracted text).
+```mermaid
+sequenceDiagram
 
-### 1. Users Collection
+participant User
+participant React
+participant Express
+participant MongoDB
 
-This collection manages system access and role-based permissions. Passwords are encrypted using bcrypt.
+User->>React: Login
 
-| Field | Type | Description |
-|--------|-------|-------------|
-| `username` | String | Unique identifier for the user |
-| `password` | String | bcrypt-hashed password string |
-| `role` | String | Access level (e.g., `MasterAdmin`, `Uploader`, `Normal`) |
-| `createdAt` | Date | Timestamp of account creation |
-| `updatedAt` | Date | Timestamp of last account update |
+React->>Express: POST /login
 
-**Example User Record:**
-```json
-{
-  "_id": "ObjectId('6a475c3f8bdb7c5fd0e2e7df')",
-  "username": "admin",
-  "password": "$2b$10$lvwYf4xpaj9hQ8KxQ8JvJ.nCduEYDT8eI0.9tI/X8Kxuh./ubznIq",
-  "role": "MasterAdmin",
-  "createdAt": "2026-07-03T06:52:47.091+00:00",
-  "updatedAt": "2026-07-03T06:52:47.091+00:00",
-  "__v": 0
-}
+Express->>MongoDB: Find User
 
+MongoDB-->>Express: User Record
 
+Express->>Express: bcrypt.compare()
+
+alt Valid Credentials
+
+Express->>Express: Generate JWT
+
+Express-->>React: JWT Token
+
+React->>React: Store Token
+
+React->>Express: Protected Request
+
+Express->>Express: Verify JWT
+
+Express-->>React: Authorized Response
+
+else Invalid Credentials
+
+Express-->>React: Authentication Failed
+
+end
+```
 
 ---
 
-# ⚙ Backend Workflow
+# 📤 Upload Workflow
 
-The backend exposes two primary routes:
+```mermaid
+sequenceDiagram
 
+participant User
+participant React
+participant Express
+participant MongoDB
+
+User->>React: Upload PDF
+
+React->>Express: POST /api/upload
+
+Express->>Express: Multer Stores File
+
+Express->>Express: Extract Text using pdf-parse
+
+Express->>MongoDB: Save Document & Metadata
+
+MongoDB-->>Express: Success
+
+Express->>Express: Delete Temporary File
+
+Express-->>React: Upload Successful
 ```
-POST /api/search
-POST /api/upload
-```
 
-## Search Logic
+---
 
-The search query is split into keywords before building MongoDB queries.
+# 🔍 Search Workflow
+
+Search queries are tokenized into individual keywords before constructing MongoDB queries.
 
 ### Match Any (OR)
-
-Returns documents where **any keyword** appears in:
-
-- filename
-- extracted_text
 
 ```javascript
 {
@@ -116,8 +208,6 @@ Returns documents where **any keyword** appears in:
 ```
 
 ### Match All (AND)
-
-Returns only documents containing **every keyword**.
 
 ```javascript
 {
@@ -140,88 +230,124 @@ Returns only documents containing **every keyword**.
 
 ---
 
-# 📤 Upload Workflow
+# 🗄 Database Design
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Client
-    participant Server
-    participant MongoDB
+## Documents Collection
 
-    User->>Client: Upload PDF
-    Client->>Server: POST /api/upload
-    Note over Server: Multer stores file temporarily
-    Server->>Server: Extract text using pdf-parse
-    Server->>Server: Generate metadata
-    Server->>MongoDB: Save document
-    MongoDB-->>Server: Success
-    Server->>Server: Delete temporary file
-    Server-->>Client: Upload Successful
+| Field | Type | Description |
+|------|------|-------------|
+| `_id` | ObjectId | Document ID |
+| `filename` | String | Original filename |
+| `file_type` | String | File type |
+| `fileUrl` | String | Storage path |
+| `metadata` | Object | Dynamic metadata |
+| `extracted_text` | String | Extracted PDF content |
+| `uploadedBy` | ObjectId | User reference |
+| `createdAt` | Date | Upload timestamp |
+
+### Example
+
+```json
+{
+  "_id": "...",
+  "filename": "Seismic.pdf",
+  "file_type": "PDF",
+  "fileUrl": "/uploads/file.pdf",
+  "metadata": {
+    "department": "Exploration",
+    "uploadDate": "2026-07-03"
+  },
+  "extracted_text": "Quantitative Seismic Interpretation..."
+}
 ```
 
 ---
 
-# 🎨 Frontend Features
+## Users Collection
 
-## 🔍 Search Dashboard
-
-- Elegant centered search bar
-- Toggle between AND / OR search
-- Responsive layout
-- Smooth animations
-
-## 📄 Upload Modal
-
-- Drag & upload PDF
-- Department selection
-- Framer Motion animations
-
-## 📋 Results Grid
-
-Displays:
-
-- File type icon
-- Filename
-- Metadata tags
-- Preview snippet
-- Hover animations
-
-## 📖 Document Viewer
-
-- Full-screen modal
-- Displays extracted document text
-- Dynamic keyword highlighting
-- Safe rendering without `dangerouslySetInnerHTML`
+| Field | Type | Description |
+|------|------|-------------|
+| `_id` | ObjectId | User ID |
+| `username` | String | Username |
+| `password` | String | bcrypt hashed password |
+| `role` | String | MasterAdmin / Uploader / Normal |
+| `createdAt` | Date | Creation timestamp |
+| `updatedAt` | Date | Update timestamp |
 
 ---
 
-# 📁 Project Structure
+# 📊 Entity Relationship Diagram
+
+```mermaid
+erDiagram
+
+USERS {
+
+ObjectId _id
+
+string username
+
+string password
+
+string role
+
+datetime createdAt
+
+datetime updatedAt
+
+}
+
+DOCUMENTS {
+
+ObjectId _id
+
+string filename
+
+string file_type
+
+string fileUrl
+
+object metadata
+
+string extracted_text
+
+}
+
+USERS ||--o{ DOCUMENTS : uploads
+```
+
+---
+
+# 📂 Project Structure
 
 ```text
-ONGC Project
-│
-├── backend
-│   ├── models
-│   │   └── Document.js
-│   ├── uploads
+ONGC-Nexus/
+
+├── backend/
+│   ├── config/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── uploads/
 │   ├── server.js
-│   ├── seed.js
-│   ├── insert_cv.js
+│   ├── seedAdmin.js
 │   ├── package.json
 │   └── .env
 │
-├── frontend
-│   ├── src
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── assets/
 │   │   ├── App.jsx
-│   │   ├── SearchDashboard.jsx
-│   │   ├── ResultsGrid.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
+│   │   └── main.jsx
 │   ├── package.json
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── postcss.config.js
+│   └── vite.config.js
+│
+├── docs/
+│   └── dashboard-preview.png
 │
 └── README.md
 ```
@@ -232,57 +358,59 @@ ONGC Project
 
 ## Prerequisites
 
-Make sure the following are installed:
-
-- Node.js (v18 or later)
+- Node.js v18+
 - MongoDB
 - Git
 
 ---
 
-## 1️⃣ Clone Repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/Prathmesh-ally/ONGC-Nexus.git
-cd "ONGC Project"
+
+cd ONGC-Nexus
 ```
 
 ---
 
-## 2️⃣ Backend Setup
-
-Navigate to backend:
+## Backend Setup
 
 ```bash
 cd backend
-```
 
-Install dependencies:
-
-```bash
 npm install
 ```
 
-Create a `.env` file:
+Create a `.env` file.
 
 ```env
 PORT=5000
+
 MONGODB_URI=mongodb://127.0.0.1:27017/ongc_nexus
+
+JWT_SECRET=your_secret_key
 ```
 
-Start the server:
+Seed the administrator account (optional).
 
 ```bash
-node server.js
+node seedAdmin.js
 ```
 
-or
+Run the backend.
 
 ```bash
 npm run dev
 ```
 
-Backend will run at:
+or
+
+```bash
+node server.js
+```
+
+Backend URL:
 
 ```
 http://localhost:5000
@@ -290,27 +418,17 @@ http://localhost:5000
 
 ---
 
-## 3️⃣ Frontend Setup
-
-Open a new terminal.
+## Frontend Setup
 
 ```bash
 cd frontend
-```
 
-Install dependencies:
-
-```bash
 npm install
-```
 
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-Frontend runs at:
+Frontend URL:
 
 ```
 http://localhost:5173
@@ -318,43 +436,18 @@ http://localhost:5173
 
 ---
 
-## 4️⃣ Database Seeding (Optional)
-
-Populate the database with sample documents.
-
-```bash
-cd backend
-
-node seed.js
-```
-
-or
-
-```bash
-node insert_cv.js
-```
-
----
-
 # 📡 API Endpoints
 
-## Upload Document
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/login` | User authentication |
+| POST | `/api/upload` | Upload PDF |
+| POST | `/api/search` | Search documents |
+| GET | `/documents` | Retrieve documents |
+| GET | `/documents/:id` | View document |
+| POST | `/users` | Create new user (MasterAdmin) |
 
-```
-POST /api/upload
-```
-
-Uploads a PDF, extracts text, stores metadata, and saves it to MongoDB.
-
----
-
-## Search Documents
-
-```
-POST /api/search
-```
-
-Example request:
+Example search request:
 
 ```json
 {
@@ -367,46 +460,40 @@ Example request:
 
 # ⚡ Search Optimization
 
-A **Compound Text Index** is created on:
+MongoDB uses text indexes on:
 
+- `filename`
 - `extracted_text`
-- `metadata`
 
-This enables:
-
-- Fast full-text searches
-- Better scalability
-- Efficient querying of large document collections
+Additional metadata fields can be indexed to improve filtering performance.
 
 ---
 
 # 🚀 Future Enhancements
 
 - OCR for scanned PDFs
-- Image OCR support
+- Image OCR
 - Video transcription
-- AI-powered semantic search
-- Document summarization
-- Authentication & Authorization
-- Department-wise access control
+- AI semantic search
+- AI document summarization
 - Elasticsearch integration
-- Cloud Storage (AWS S3 / Azure Blob)
-- Recent searches
+- Department-based permissions
 - Search history
+- Recent searches
 - Document versioning
+- Audit logging
 - Multi-language support
+- Cloud storage (AWS S3 / Azure Blob)
+- Multi-factor authentication (MFA)
+- File encryption at rest
 
 ---
 
-# 📷 Screenshots
+# 📸 Screenshots
 
 ## Dashboard
 
-> Add your screenshot here
-
-```text
-docs/dashboard-preview.png
-```
+![Dashboard](docs/dashboard-preview.png)
 
 ---
 
@@ -418,6 +505,10 @@ This project is licensed under the **MIT License**.
 
 # 👨‍💻 Author
 
-**Prathmesh**
+**Prathmesh Sanap**
 
 GitHub: https://github.com/Prathmesh-ally
+
+---
+
+⭐ If you found this project useful, consider giving it a **Star** on GitHub.
