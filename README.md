@@ -1,93 +1,420 @@
-# Search Knowledge Repository
+# 🔎 Search Knowledge Repository
 
-![Dashboard Preview](./docs/dashboard-preview.png)
+A full-stack **MERN** application for fast and efficient searching, uploading, and browsing of organizational documents and media. The application provides a centralized knowledge repository with full-text search, metadata filtering, PDF text extraction, and an interactive document viewer.
 
-## Project Overview
-The Search Knowledge Repository is a full-stack web application built to instantly query, browse, and view unstructured organizational documents and media. It provides a centralized platform to efficiently search through a diverse range of assets, making knowledge discovery seamless and lightning-fast.
+---
 
-## Architecture Stack
-This project leverages the modern MERN stack to deliver a robust, fast, and responsive user experience:
-- **Frontend:** React (Vite), Tailwind CSS (for highly customizable styling), Framer Motion (for smooth animations and micro-interactions), and Lucide-React (for clean iconography).
-- **Backend:** Node.js and Express.js (handling API routing and server logic).
-- **Database:** MongoDB (using Mongoose for object data modeling).
+## 📖 Overview
 
-### Figure 1: System Architecture Diagram
+The **Search Knowledge Repository** enables users to quickly discover information across unstructured documents stored within an organization. Documents are uploaded, processed, indexed, and made searchable through a modern, responsive web interface.
+
+### ✨ Features
+
+- 🔍 Full-text document search
+- 📄 PDF upload with automatic text extraction
+- 🏷 Dynamic metadata storage
+- ⚡ AND / OR search modes
+- 🎯 Keyword highlighting
+- 🌙 Modern dark-themed UI
+- 📱 Responsive design
+- 🚀 MongoDB text indexing for fast searches
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- React (Vite)
+- Tailwind CSS
+- Framer Motion
+- Lucide React
+
+## Backend
+
+- Node.js
+- Express.js
+- Multer
+- pdf-parse
+
+## Database
+
+- MongoDB
+- Mongoose
+
+---
+
+# 🏗 System Architecture
+
 ```mermaid
 graph TD
-    Client["Client (React / Vite / Tailwind)"] -->|HTTP Requests| API["API Gateway (Node.js / Express)"]
-    API -->|Mongoose ORM| DB["Database (MongoDB)"]
+    Client["React + Vite Frontend"] -->|HTTP Requests| API["Node.js + Express API"]
+    API -->|Mongoose ORM| DB["MongoDB Database"]
 ```
 
-## Database Design
-Our database is streamlined around a single, highly flexible `documents` collection. Each document contains the following core fields:
-- `filename`: The name of the file or asset.
-- `file_type`: The format of the file (e.g., PDF, Image, Word, CAD, Video).
-- `metadata`: A mixed data type object containing key-value pairs of dynamic metadata (like author, resolution, tags, department, upload date).
-- `extracted_text`: A raw string containing all the text extracted from the document via OCR, parsing, or transcription.
+---
 
-To ensure lightning-fast queries across massive amounts of text, a **Compound Text Index** is applied specifically to the `extracted_text` and `metadata` fields.
+# 📂 Database Design
 
-## Backend Workflow
-The core of the backend relies on two major routes: `POST /api/search` and `POST /api/upload`.
+The application uses a flexible **documents** collection.
 
-### Search Logic (`/api/search`)
-When a user submits a query, the search string is split into individual keyword tokens. The backend builds dynamic MongoDB queries using an internal `$or` condition to check both `filename` and `extracted_text` simultaneously.
-- **Match Any (OR):** Uses an outer `$or` array to return documents where any word hits either field.
-- **Match All (AND):** Uses an outer `$and` array to strictly enforce that every single keyword typed exists somewhere in the document's title or content.
+| Field | Description |
+|--------|-------------|
+| `filename` | Name of the uploaded document |
+| `file_type` | PDF, DOCX, Image, CAD, Video, etc. |
+| `metadata` | Dynamic key-value metadata |
+| `extracted_text` | Parsed text extracted from the document |
 
-### Figure 2: Upload & Extraction Workflow (`/api/upload`)
-The backend features a robust file upload pipeline utilizing `multer` for multipart form data and `pdf-parse` for automated raw text extraction.
+Example document:
+
+```json
+{
+  "filename": "Pipeline_Report.pdf",
+  "file_type": "PDF",
+  "metadata": {
+    "department": "Production",
+    "author": "John Doe",
+    "upload_date": "2025-01-10",
+    "tags": ["Pipeline", "Inspection"]
+  },
+  "extracted_text": "Complete OCR extracted content..."
+}
+```
+
+---
+
+# ⚙ Backend Workflow
+
+The backend exposes two primary routes:
+
+```
+POST /api/search
+POST /api/upload
+```
+
+## Search Logic
+
+The search query is split into keywords before building MongoDB queries.
+
+### Match Any (OR)
+
+Returns documents where **any keyword** appears in:
+
+- filename
+- extracted_text
+
+```javascript
+{
+  $or: [
+    { filename: /keyword/i },
+    { extracted_text: /keyword/i }
+  ]
+}
+```
+
+### Match All (AND)
+
+Returns only documents containing **every keyword**.
+
+```javascript
+{
+  $and: [
+    {
+      $or: [
+        { filename: /keyword1/i },
+        { extracted_text: /keyword1/i }
+      ]
+    },
+    {
+      $or: [
+        { filename: /keyword2/i },
+        { extracted_text: /keyword2/i }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+# 📤 Upload Workflow
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant React as Client (React)
-    participant Express as Server (Express/Multer)
-    participant DB as MongoDB
+    participant Client
+    participant Server
+    participant MongoDB
 
-    User->>React: Upload PDF & Select Department
-    React->>Express: POST /api/upload (FormData)
-    Note over Express: Multer caches file temporarily
-    Express->>Express: pdf-parse extracts raw text
-    Express->>Express: Generate Metadata (Date, Dept)
-    Express->>DB: Save Document Model
-    DB-->>Express: Success
-    Note over Express: fs.unlinkSync cleans up local file
-    Express-->>React: 201 Created Response
-    React-->>User: Show Success & Close Modal
+    User->>Client: Upload PDF
+    Client->>Server: POST /api/upload
+    Note over Server: Multer stores file temporarily
+    Server->>Server: Extract text using pdf-parse
+    Server->>Server: Generate metadata
+    Server->>MongoDB: Save document
+    MongoDB-->>Server: Success
+    Server->>Server: Delete temporary file
+    Server-->>Client: Upload Successful
 ```
 
-## Frontend Workflow
-The user interface focuses on a premium, dark-themed corporate aesthetic. Key UI features include:
-- **Search Dashboard:** A beautifully centered, sleek search bar featuring a glowing focus state and an intuitive toggle switch for transitioning between "OR" and "AND" search logic.
-- **Upload Modal:** A fluid, spring-animated Framer Motion overlay enabling users to classify incoming PDFs by ONGC Departments prior to ingestion.
-- **Results Grid:** A responsive, data-dense grid of cards displaying the file type icon, document name, metadata pills, and text snippets. It features deep hover animations and crisp borders.
-- **Document Viewer Modal:** An interactive full-screen overlay that pops up when a document card is clicked. It presents the entire `extracted_text` string using elegant, readable typography.
-- **Dynamic Keyword Highlighting:** The viewer utilizes a custom React parsing function to read the active search query and wrap matched keywords inside stylized highlight tags (using regex) on the fly—ensuring perfectly safe rendering without relying on `dangerouslySetInnerHTML`.
+---
 
-## Project Structure
+# 🎨 Frontend Features
+
+## 🔍 Search Dashboard
+
+- Elegant centered search bar
+- Toggle between AND / OR search
+- Responsive layout
+- Smooth animations
+
+## 📄 Upload Modal
+
+- Drag & upload PDF
+- Department selection
+- Framer Motion animations
+
+## 📋 Results Grid
+
+Displays:
+
+- File type icon
+- Filename
+- Metadata tags
+- Preview snippet
+- Hover animations
+
+## 📖 Document Viewer
+
+- Full-screen modal
+- Displays extracted document text
+- Dynamic keyword highlighting
+- Safe rendering without `dangerouslySetInnerHTML`
+
+---
+
+# 📁 Project Structure
+
 ```text
 ONGC Project
+│
 ├── backend
 │   ├── models
 │   │   └── Document.js
-│   ├── uploads/            # Temporary file storage via Multer
-│   ├── .env
+│   ├── uploads
+│   ├── server.js
+│   ├── seed.js
 │   ├── insert_cv.js
 │   ├── package.json
-│   ├── seed.js
-│   └── server.js
+│   └── .env
+│
 ├── frontend
 │   ├── src
 │   │   ├── App.jsx
-│   │   ├── index.css
-│   │   ├── main.jsx
+│   │   ├── SearchDashboard.jsx
 │   │   ├── ResultsGrid.jsx
-│   │   └── SearchDashboard.jsx
-│   ├── index.html
+│   │   ├── main.jsx
+│   │   └── index.css
 │   ├── package.json
-│   ├── postcss.config.js
+│   ├── vite.config.js
 │   ├── tailwind.config.js
-│   └── vite.config.js
+│   └── postcss.config.js
+│
 └── README.md
 ```
+
+---
+
+# 🚀 Installation
+
+## Prerequisites
+
+Make sure the following are installed:
+
+- Node.js (v18 or later)
+- MongoDB
+- Git
+
+---
+
+## 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/Prathmesh-ally/ONGC-Nexus.git
+cd "ONGC Project"
+```
+
+---
+
+## 2️⃣ Backend Setup
+
+Navigate to backend:
+
+```bash
+cd backend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file:
+
+```env
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/ongc_nexus
+```
+
+Start the server:
+
+```bash
+node server.js
+```
+
+or
+
+```bash
+npm run dev
+```
+
+Backend will run at:
+
+```
+http://localhost:5000
+```
+
+---
+
+## 3️⃣ Frontend Setup
+
+Open a new terminal.
+
+```bash
+cd frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Frontend runs at:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 4️⃣ Database Seeding (Optional)
+
+Populate the database with sample documents.
+
+```bash
+cd backend
+
+node seed.js
+```
+
+or
+
+```bash
+node insert_cv.js
+```
+
+---
+
+# 📡 API Endpoints
+
+## Upload Document
+
+```
+POST /api/upload
+```
+
+Uploads a PDF, extracts text, stores metadata, and saves it to MongoDB.
+
+---
+
+## Search Documents
+
+```
+POST /api/search
+```
+
+Example request:
+
+```json
+{
+  "query": "pipeline inspection",
+  "mode": "OR"
+}
+```
+
+---
+
+# ⚡ Search Optimization
+
+A **Compound Text Index** is created on:
+
+- `extracted_text`
+- `metadata`
+
+This enables:
+
+- Fast full-text searches
+- Better scalability
+- Efficient querying of large document collections
+
+---
+
+# 🚀 Future Enhancements
+
+- OCR for scanned PDFs
+- Image OCR support
+- Video transcription
+- AI-powered semantic search
+- Document summarization
+- Authentication & Authorization
+- Department-wise access control
+- Elasticsearch integration
+- Cloud Storage (AWS S3 / Azure Blob)
+- Recent searches
+- Search history
+- Document versioning
+- Multi-language support
+
+---
+
+# 📷 Screenshots
+
+## Dashboard
+
+> Add your screenshot here
+
+```text
+docs/dashboard-preview.png
+```
+
+---
+
+# 📄 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+# 👨‍💻 Author
+
+**Prathmesh**
+
+GitHub: https://github.com/Prathmesh-ally
