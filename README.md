@@ -392,7 +392,7 @@ MONGODB_URI=mongodb://127.0.0.1:27017/knowledge_repo
 JWT_SECRET=your_secret_key
 ```
 
-Seed the administrator account (optional).
+Seed the administrator account.
 
 ```bash
 node seedAdmin.js
