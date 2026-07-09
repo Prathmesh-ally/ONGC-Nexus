@@ -387,7 +387,7 @@ Create a `.env` file.
 ```env
 PORT=5000
 
-MONGODB_URI=mongodb://127.0.0.1:27017/ongc_nexus
+MONGODB_URI=mongodb://127.0.0.1:27017/knowledge_repo
 
 JWT_SECRET=your_secret_key
 ```
