@@ -471,20 +471,12 @@ Additional metadata fields can be indexed to improve filtering performance.
 
 # 🚀 Future Enhancements
 
-- OCR for scanned PDFs
-- Image OCR
-- Video transcription
 - AI semantic search
 - AI document summarization
-- Elasticsearch integration
 - Department-based permissions
 - Search history
 - Recent searches
 - Document versioning
-- Audit logging
-- Multi-language support
-- Cloud storage (AWS S3 / Azure Blob)
-- Multi-factor authentication (MFA)
 - File encryption at rest
 
 ---
