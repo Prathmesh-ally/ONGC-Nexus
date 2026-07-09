@@ -56,30 +56,33 @@ graph TD
 
 # 📂 Database Design
 
-The application uses a flexible **documents** collection.
+The ONGC Nexus database utilizes two highly optimized MongoDB collections: **Users** (handling authentication and RBAC) and **Documents** (storing file details, metadata, and extracted text).
 
-| Field | Description |
-|--------|-------------|
-| `filename` | Name of the uploaded document |
-| `file_type` | PDF, DOCX, Image, CAD, Video, etc. |
-| `metadata` | Dynamic key-value metadata |
-| `extracted_text` | Parsed text extracted from the document |
+### 1. Users Collection
 
-Example document:
+This collection manages system access and role-based permissions. Passwords are encrypted using bcrypt.
 
+| Field | Type | Description |
+|--------|-------|-------------|
+| `username` | String | Unique identifier for the user |
+| `password` | String | bcrypt-hashed password string |
+| `role` | String | Access level (e.g., `MasterAdmin`, `Uploader`, `Normal`) |
+| `createdAt` | Date | Timestamp of account creation |
+| `updatedAt` | Date | Timestamp of last account update |
+
+**Example User Record:**
 ```json
 {
-  "filename": "Pipeline_Report.pdf",
-  "file_type": "PDF",
-  "metadata": {
-    "department": "Production",
-    "author": "John Doe",
-    "upload_date": "2025-01-10",
-    "tags": ["Pipeline", "Inspection"]
-  },
-  "extracted_text": "Complete OCR extracted content..."
+  "_id": "ObjectId('6a475c3f8bdb7c5fd0e2e7df')",
+  "username": "admin",
+  "password": "$2b$10$lvwYf4xpaj9hQ8KxQ8JvJ.nCduEYDT8eI0.9tI/X8Kxuh./ubznIq",
+  "role": "MasterAdmin",
+  "createdAt": "2026-07-03T06:52:47.091+00:00",
+  "updatedAt": "2026-07-03T06:52:47.091+00:00",
+  "__v": 0
 }
-```
+
+
 
 ---
 
