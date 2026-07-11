@@ -51,14 +51,13 @@ const highlightKeywords = (text, query) => {
 
 
 const AutoSearchControl = ({ renderSearchProps, searchKeyword }) => {
-    // 1. TRAP THE PROPS: This prevents React from destroying our loop on every render
     const propsRef = useRef(renderSearchProps);
 
     useEffect(() => {
         propsRef.current = renderSearchProps;
     }, [renderSearchProps]);
 
-    // 2. THE UNBREAKABLE LOOP
+
     useEffect(() => {
         if (!searchKeyword) return;
 
@@ -68,32 +67,28 @@ const AutoSearchControl = ({ renderSearchProps, searchKeyword }) => {
             attempts++;
             const currentProps = propsRef.current;
 
-            // A. Force the keyword into the UI state
             if (currentProps.keyword !== searchKeyword) {
                 currentProps.setKeyword(searchKeyword);
             }
 
-            // B. Execute the search blindly
             currentProps.search();
 
-            // C. Goal State Check: ONLY stop when matches are found (or safety timeout hits)
             if (currentProps.numberOfMatches > 0) {
-                console.log(`✅ Goal Reached: Found ${currentProps.numberOfMatches} matches for "${searchKeyword}"`);
+                console.log(` Goal Reached: Found ${currentProps.numberOfMatches} matches for "${searchKeyword}"`);
                 clearInterval(interval);
             } else if (attempts >= 40) {
-                // Safety kill-switch after 20 seconds so the browser doesn't crash
-                console.log(`❌ Loop stopped: Could not find "${searchKeyword}" after 20 seconds.`);
+                console.log(` Loop stopped: Could not find "${searchKeyword}" after 20 seconds.`);
                 clearInterval(interval);
             }
-        }, 500); // Strike every half-second
+        }, 500); 
 
         return () => clearInterval(interval);
-    }, [searchKeyword]); // ONLY re-run if the user changes the global search word
+    }, [searchKeyword]); 
 
     return (
         <div className="flex items-center justify-end w-full gap-4 text-sm font-medium">
             
-            {/* The Invisible Input Hack: Keeps the plugin connected */}
+            {}
             <input
                 type="text"
                 value={renderSearchProps.keyword}
@@ -199,7 +194,6 @@ const AutoSearchControl = ({ renderSearchProps, searchKeyword }) => {
 const ResultsGrid = ({ results, hasSearched, searchQuery = "" }) => {
   const [activeDocument, setActiveDocument] = useState(null);
 
-  // BUG FIX: Wrap the plugin instance in useMemo so it survives re-renders!
   const searchPluginInstance = searchPlugin();
   const { Search } = searchPluginInstance;
 
