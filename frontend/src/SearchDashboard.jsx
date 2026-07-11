@@ -11,7 +11,7 @@ const DEPARTMENTS = ['Exploration', 'Drilling', 'Production', 'Engineering', 'HR
 const SearchDashboard = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [mode, setMode] = useState('OR'); // 'OR' | 'AND'
+  const [mode, setMode] = useState('OR'); 
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -22,21 +22,20 @@ const SearchDashboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
 
-  // Upload Modal State
+
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(DEPARTMENTS[0]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
 
-  // Admin Portal State
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newUserRole, setNewUserRole] = useState('Normal');
   const [isRegistering, setIsRegistering] = useState(false);
   const [adminStatus, setAdminStatus] = useState(null);
 
-  // RBAC checks
+
   const userString = localStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : null;
   const canUpload = user?.role === 'MasterAdmin' || user?.role === 'Uploader';
@@ -109,7 +108,6 @@ const SearchDashboard = () => {
     setUploadStatus(null);
     
     const formData = new FormData();
-    // Intentionally using 'file' to perfectly match the backend multer logic: upload.single('file')
     formData.append('file', selectedFile);
     formData.append('department', selectedDepartment);
 
@@ -143,7 +141,7 @@ const SearchDashboard = () => {
     <div className="w-full flex-grow flex flex-col relative">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-4 relative">
         
-        {/* Action Buttons (Top Right corner fixed over header) */}
+        {}
         <div className="fixed top-6 right-8 z-50 flex items-center gap-4">
           {canUpload && (
             <button 
