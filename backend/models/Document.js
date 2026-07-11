@@ -8,7 +8,6 @@ const documentSchema = new mongoose.Schema({
   extracted_text: { type: String, required: true }
 });
 
-// Apply a MongoDB Text Index on 'extracted_text' and 'metadata'
 documentSchema.index({ extracted_text: 'text', metadata: 'text' });
 
 const Document = mongoose.model('Document', documentSchema);
