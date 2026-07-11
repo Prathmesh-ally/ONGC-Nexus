@@ -12,7 +12,7 @@ const seedMasterAdmin = async () => {
 
         const adminExists = await User.findOne({ role: 'MasterAdmin' });
         if (adminExists) {
-            console.log("⚠️ Master Admin already exists! Aborting script.");
+            console.log("Alert: Master Admin already exists! Aborting script.");
             process.exit();
         }
 
@@ -27,13 +27,13 @@ const seedMasterAdmin = async () => {
         });
 
         await masterAdmin.save();
-        console.log("✅ SUCCESS: Master Admin account created securely.");
+        console.log(" SUCCESS: Master Admin account created securely.");
         console.log("Username: admin");
         
-        process.exit(0); // Shuts down the script cleanly after success
+        process.exit(0); 
     } catch (error) {
-        console.error("❌ Error seeding admin:", error);
-        process.exit(1); // Shuts down with an error code
+        console.error("Alert,Error seeding admin:", error);
+        process.exit(1); 
     }
 };
 
