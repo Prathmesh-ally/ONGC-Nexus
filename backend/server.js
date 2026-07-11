@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000, 
   max: 100,
   message: { message: "Too many requests, please try again later." }
 });
@@ -88,12 +88,10 @@ app.post('/api/search', async (req, res) => {
       if (mode === 'AND') {
         searchCriteria = { $and: tokenClauses };
       } else {
-        // default mode 'OR'
         searchCriteria = { $or: tokenClauses };
       }
     }
 
-    // Apply department filter if present and not 'All'
     if (department && department !== 'All') {
       if (Object.keys(searchCriteria).length > 0) {
         searchCriteria = { 
@@ -139,7 +137,6 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
     let extracted_text = '';
     
-    // Automatically extract text from PDFs
     if (req.file.mimetype === 'application/pdf') {
       const dataBuffer = fs.readFileSync(req.file.path);
       const data = await pdfParse(dataBuffer);
