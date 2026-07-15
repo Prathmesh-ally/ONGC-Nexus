@@ -433,7 +433,7 @@ Frontend URL:
 ```
 http://localhost:5173
 ```
-# For Hastelless Installtion Provide The Below Prompt in your IDE in the Agent Section :-
+# For Hassel less Installtion Provide The Below Prompt in your IDE in the Agent Section :-
 
 You are an expert DevOps AI Assistant. Your task is to completely set up, configure, and execute the MERN-stack ONGC-Nexus repository on this local machine. You must handle all terminal commands, environment configurations, and auto-resolve any OS-specific or module errors silently.
 
@@ -471,6 +471,8 @@ If you encounter any of the following errors during execution, apply the corresp
   FIX: Inject `await User.deleteMany({});` right before the user check in `seedAdmin.js` to force a clean database reset, then re-run the script.
 
 Confirm when both servers are live and provide the local frontend URL for access.
+
+
 ---
 
 # 📡 API Endpoints
