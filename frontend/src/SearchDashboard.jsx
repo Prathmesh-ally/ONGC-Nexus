@@ -141,12 +141,12 @@ const SearchDashboard = () => {
     <div className="w-full flex-grow flex flex-col relative">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-4 relative">
         
-        {}
-        <div className="fixed top-6 right-8 z-50 flex items-center gap-4">
+        {/* Action Buttons */}
+        <div className="relative md:fixed z-50 flex flex-col flex-wrap md:flex-row md:flex-nowrap justify-center md:justify-between items-stretch md:items-center gap-3 md:gap-4 w-full md:w-auto px-4 md:px-0 mb-6 md:mb-0 md:top-6 md:right-8 mt-4 md:mt-0">
           {canUpload && (
             <button 
               onClick={() => setShowUploadModal(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 font-semibold rounded-xl border border-indigo-500/30 transition-all shadow-[0_0_15px_-3px_rgba(99,102,241,0.2)] hover:shadow-[0_0_20px_-2px_rgba(99,102,241,0.4)]"
+              className="flex items-center justify-center gap-2 px-5 py-3 md:py-2.5 w-full md:w-auto bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 font-semibold rounded-xl border border-indigo-500/30 transition-all shadow-[0_0_15px_-3px_rgba(99,102,241,0.2)] hover:shadow-[0_0_20px_-2px_rgba(99,102,241,0.4)]"
             >
               <UploadCloud className="w-5 h-5" />
               Upload PDF
@@ -154,7 +154,7 @@ const SearchDashboard = () => {
           )}
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-2 px-5 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 font-semibold rounded-xl border border-slate-700/50 transition-all shadow-lg"
+            className="flex items-center justify-center gap-2 px-5 py-3 md:py-2.5 w-full md:w-auto bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 font-semibold rounded-xl border border-slate-700/50 transition-all shadow-lg"
           >
             Logout
           </button>
@@ -235,11 +235,11 @@ const SearchDashboard = () => {
         </div>
 
         {/* Search Section */}
-        <div className="max-w-3xl mx-auto mb-16">
+        <div className="w-full md:max-w-2xl lg:max-w-3xl mx-auto mb-16 px-4 md:px-0">
           <form onSubmit={handleSearch} className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-focus-within:opacity-60 transition duration-500"></div>
-            <div className="relative bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/50 p-2 flex items-center transition-all duration-300 shadow-2xl">
-              <div className="pl-4 pr-2 text-slate-400">
+            <div className="relative bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/50 p-3 md:p-2 flex flex-col md:flex-row flex-wrap md:flex-nowrap items-stretch md:items-center transition-all duration-300 shadow-2xl gap-3 md:gap-0">
+              <div className="hidden md:flex pl-4 pr-2 text-slate-400">
                 <Search className="w-6 h-6" />
               </div>
               <input
@@ -247,14 +247,14 @@ const SearchDashboard = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search keywords, metadata, or document content..."
-                className="w-full bg-transparent border-none outline-none py-4 text-lg text-slate-100 placeholder:text-slate-500 focus:ring-0"
+                className="w-full flex-grow bg-slate-800 md:bg-transparent rounded-xl md:rounded-none border md:border-none border-slate-700 outline-none px-4 md:px-0 py-3 md:py-4 text-base md:text-lg text-slate-100 placeholder:text-slate-500 focus:ring-0"
               />
               
-              <div className="relative mr-2 flex-shrink-0 border-l border-slate-700/50 pl-3">
+              <div className="relative w-full md:w-auto md:mr-2 flex-shrink-0 md:border-l border-slate-700/50 md:pl-3">
                 <select 
                   value={searchDepartment}
                   onChange={(e) => setSearchDepartment(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none appearance-none pr-10 cursor-pointer transition-colors hover:border-slate-600"
+                  className="w-full md:w-auto bg-slate-800 border border-slate-700 text-slate-200 rounded-xl md:rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none appearance-none pr-10 cursor-pointer transition-colors hover:border-slate-600"
                 >
                   <option value="All">All Depts</option>
                   {DEPARTMENTS.map(dept => (
@@ -269,7 +269,7 @@ const SearchDashboard = () => {
               <button 
                 type="submit"
                 disabled={isSearching || (!query.trim() && searchDepartment === 'All')}
-                className="ml-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-medium rounded-xl transition-colors duration-200 flex items-center min-w-[120px] justify-center shadow-lg"
+                className="w-full md:w-auto md:ml-2 px-6 py-3.5 md:py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-medium rounded-xl transition-colors duration-200 flex items-center min-w-[120px] justify-center shadow-lg"
               >
                 {isSearching ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Search'}
               </button>

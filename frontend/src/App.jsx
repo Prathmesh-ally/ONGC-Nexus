@@ -10,12 +10,12 @@ function App() {
       <div className="min-h-screen bg-[#0a0f1c] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a0f1c] to-black text-slate-200 font-sans flex flex-col selection:bg-indigo-500/30">
         
         {/* Clean Fixed Header for Branding */}
-        <header className="fixed top-0 left-0 w-full px-6 sm:px-10 py-6 bg-[#0f172a] z-50 border-b border-slate-800 flex items-center justify-between">
+        <header className="fixed top-0 left-0 w-full px-4 md:px-6 sm:px-10 py-4 md:py-6 bg-[#0f172a] z-50 border-b border-slate-800 flex flex-col md:flex-row md:flex-nowrap justify-between items-center gap-4 md:gap-0">
           <div className="flex items-center gap-1.5 pointer-events-auto w-max">
-            <span className="text-lg tracking-[0.2em] font-bold text-slate-200 hover:text-white transition-colors uppercase">
+            <span className="text-lg md:text-xl tracking-[0.2em] font-bold text-slate-200 hover:text-white transition-colors uppercase">
               ONGC NEXUS
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] mt-0.5"></span>
+            <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] mt-0.5"></span>
           </div>
         </header>
 
