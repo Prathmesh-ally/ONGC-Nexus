@@ -54,7 +54,7 @@ const SearchDashboard = () => {
     setAdminStatus(null);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/auth/register', 
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, 
         { username: newUsername, password: newPassword, role: newUserRole },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -77,7 +77,7 @@ const SearchDashboard = () => {
     setIsSearching(true);
     setError(null);
     try {
-      const response = await axios.post(`http://localhost:5000/api/search?page=${pageToFetch}&limit=10`, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/search?page=${pageToFetch}&limit=10`, {
         query,
         mode,
         department: searchDepartment
@@ -112,7 +112,7 @@ const SearchDashboard = () => {
     formData.append('department', selectedDepartment);
 
     try {
-      await axios.post('http://localhost:5000/api/upload', formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setUploadStatus({ type: 'success', msg: 'File uploaded successfully!' });

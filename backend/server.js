@@ -22,10 +22,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+const allowedOrigins = [process.env.FRONTEND_URL, 'http://localhost:5173'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, or postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
+  windowMs: 15 * 60 * 1000,
   max: 100,
   message: { message: "Too many requests, please try again later." }
 });
@@ -49,7 +61,7 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'application/pdf') {
@@ -63,7 +75,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', authRoutes);
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/knowledge_repo')
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
@@ -73,7 +85,7 @@ app.post('/api/search', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    
+
     let searchCriteria = {};
 
     if (query && query.trim()) {
@@ -95,11 +107,11 @@ app.post('/api/search', async (req, res) => {
 
     if (department && department !== 'All') {
       if (Object.keys(searchCriteria).length > 0) {
-        searchCriteria = { 
+        searchCriteria = {
           $and: [
             { 'metadata.department': department },
             searchCriteria
-          ] 
+          ]
         };
       } else {
         searchCriteria = { 'metadata.department': department };
@@ -137,7 +149,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     const department = req.body.department || 'General';
 
     let extracted_text = '';
-    
+
     if (req.file.mimetype === 'application/pdf') {
       const dataBuffer = fs.readFileSync(req.file.path);
       const data = await pdfParse(dataBuffer);
@@ -149,16 +161,16 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       file_type: 'PDF',
       fileUrl: `/uploads/${req.file.filename}`,
       extracted_text: extracted_text,
-      metadata: { 
-        department: department, 
-        year: currentYear, 
-        month: currentMonth, 
-        uploadDate: now 
+      metadata: {
+        department: department,
+        year: currentYear,
+        month: currentMonth,
+        uploadDate: now
       }
     });
 
     await newDoc.save();
-    
+
     res.status(201).json({ message: 'File categorized and uploaded successfully', document: newDoc });
   } catch (error) {
     console.error('Upload error:', error);

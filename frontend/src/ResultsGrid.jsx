@@ -351,7 +351,7 @@ const ResultsGrid = ({ results, hasSearched, searchQuery = "" }) => {
                     </div>
                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
                       <Viewer 
-                        fileUrl={`http://localhost:5000${activeDocument.fileUrl}`} 
+                        fileUrl={`${import.meta.env.VITE_API_URL}${activeDocument.fileUrl}`} 
                         plugins={[searchPluginInstance]} 
                         theme="dark" 
                       />
