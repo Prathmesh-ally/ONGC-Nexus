@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
@@ -10,6 +11,7 @@ const seedMasterAdmin = async () => {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log("Connected to local database...");
 
+        await User.deleteMany({});
         const adminExists = await User.findOne({ role: 'MasterAdmin' });
         if (adminExists) {
             console.log("Alert: Master Admin already exists! Aborting script.");
