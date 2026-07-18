@@ -371,7 +371,7 @@ PHASE 1: CLONE & BACKEND SETUP
 3. Automatically generate a `.env` file in the `backend` directory with the following exact variables:
    PORT=5000
    MONGODB_URI=mongodb://127.0.0.1:27017/knowledge_repo
-   JWT_SECRET=Ongc_Super_Secret_Key_2026_!@#
+   JWT_SECRET=Your_Secret_key
 4. Execute `node seedAdmin.js` to initialize the database.
 5. Start the backend server using `npm run dev` in the background.
 
